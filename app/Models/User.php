@@ -53,6 +53,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $primaryKey = 'id_user';
+
     protected $fillable = [
         'name',
         'email',
@@ -77,24 +79,31 @@ class User extends Authenticatable
     }
 
     // Relationships
-    public function ternak()
-    {
-        return $this->hasMany(Ternak::class);
-    }
-
     public function barangMasuk()
     {
-        return $this->hasMany(BarangMasuk::class);
+        return $this->hasMany(
+            BarangMasuk::class,
+            'user_id',
+            'id_user'
+        );
     }
 
     public function barangKeluar()
     {
-        return $this->hasMany(BarangKeluar::class);
+        return $this->hasMany(
+            BarangKeluar::class,
+            'user_id',
+            'id_user'
+        );
     }
 
     public function notifikasi()
     {
-        return $this->hasMany(Notifikasi::class);
+        return $this->hasMany(
+            Notifikasi::class,
+            'user_id',
+            'id_user'
+        );
     }
 
     // Helper

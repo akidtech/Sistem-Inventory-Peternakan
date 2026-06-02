@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriInventorySeeder::class,
             BarangSeeder::class,
-            TernakSeeder::class,
         ]);
     }
 }

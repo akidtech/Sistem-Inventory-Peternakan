@@ -13,25 +13,23 @@ return new class extends Migration
         DB::statement("
             ALTER TABLE notifikasi
             MODIFY tipe ENUM(
-                'ternak_siap_jual',
                 'stok_menipis',
                 'barang_masuk',
-                'barang_keluar',
-                'ternak_terjual'
+                'barang_keluar'
             ) NOT NULL
         ");
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         DB::statement("
             ALTER TABLE notifikasi
             MODIFY tipe ENUM(
                 'ternak_siap_jual',
-                'stok_menipis'
+                'stok_menipis',
+                'barang_masuk',
+                'barang_keluar',
+                'ternak_terjual'
             ) NOT NULL
         ");
     }

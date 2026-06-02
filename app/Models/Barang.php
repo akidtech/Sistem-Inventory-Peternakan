@@ -43,6 +43,8 @@ class Barang extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_barang';
+
     protected $table = 'barang';
 
     protected $fillable = [
@@ -64,17 +66,29 @@ class Barang extends Model
     // Relationships
     public function kategori()
     {
-        return $this->belongsTo(KategoriInventory::class, 'kategori_id');
+        return $this->belongsTo(
+            KategoriInventory::class,
+            'kategori_id',
+            'id_kategori'
+        );
     }
 
     public function barangMasuk()
     {
-        return $this->hasMany(BarangMasuk::class);
+        return $this->hasMany(
+            BarangMasuk::class,
+            'barang_id',
+            'id_barang'
+        );
     }
 
     public function barangKeluar()
     {
-        return $this->hasMany(BarangKeluar::class);
+        return $this->hasMany(
+            BarangKeluar::class,
+            'barang_id',
+            'id_barang'
+        );
     }
 
     public function notifikasi()

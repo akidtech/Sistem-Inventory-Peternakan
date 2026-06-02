@@ -22,17 +22,6 @@
     {{-- ── Stat Cards ─────────────────────────────────── --}}
     <div class="row">
 
-        {{-- Total Ternak --}}
-        <div class="col-md-3 mb-4 stretch-card transparent">
-            <div class="card card-tale">
-                <div class="card-body">
-                    <p class="mb-4">Total Ternak</p>
-                    <p class="fs-30 mb-2">{{ $totalTernak }}</p>
-                    <p><i class="ti-arrow-up text-success"></i> Semua ternak aktif</p>
-                </div>
-            </div>
-        </div>
-
         {{-- Total Barang --}}
         <div class="col-md-3 mb-4 stretch-card transparent">
             <div class="card card-dark-blue">
@@ -55,6 +44,24 @@
             </div>
         </div>
 
+        {{-- Nilai Inventory --}}
+        <div class="col-md-3 mb-4 stretch-card transparent">
+            <div class="card card-tale">
+                <div class="card-body">
+                    <p class="mb-4">Nilai Inventory</p>
+
+                    <p class="fs-30 mb-2">
+                        Rp {{ number_format($nilaiInventory ?? 0, 0, ',', '.') }}
+                    </p>
+
+                    <p>
+                        <i class="ti-wallet"></i>
+                        Total aset inventory
+                    </p>
+                </div>
+            </div>
+        </div>
+
         {{-- Notifikasi --}}
         <div class="col-md-3 mb-4 stretch-card transparent">
             <div class="card card-light-danger">
@@ -70,17 +77,6 @@
 
     {{-- ── Charts Row ──────────────────────────────────── --}}
     <div class="row">
-
-        {{-- Chart: Ternak per Jenis (Pie) --}}
-        <div class="col-md-4 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-title">Komposisi Populasi Ternak</p>
-                    <p class="font-weight-500 text-muted">Distribusi ternak berdasarkan jenis</p>
-                    <canvas id="chart-jenis" height="200"></canvas>
-                </div>
-            </div>
-        </div>
 
         {{-- Chart: Aktivitas Inventory (Bar) --}}
         <div class="col-md-4 grid-margin stretch-card">
@@ -105,6 +101,54 @@
                     <p class="card-title">Stok Inventory</p>
                     <p class="font-weight-500 text-muted">Total stok per kategori</p>
                     <canvas id="chart-stok" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        {{-- Barang Hampir Habis --}}
+        <div class="col-md-4 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+
+                    <p class="card-title">
+                        Barang Hampir Habis
+                    </p>
+
+                    <p class="text-muted">
+                        Barang yang perlu segera direstock
+                    </p>
+
+                    @forelse($barangMenipis as $barang)
+                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+
+                            <div>
+                                <strong>
+                                    {{ $barang->nama_barang }}
+                                </strong>
+
+                                <small class="d-block text-muted">
+                                    Minimum:
+                                    {{ $barang->stok_minimum }}
+                                    {{ $barang->satuan }}
+                                </small>
+                            </div>
+
+                            <span class="badge badge-warning">
+                                {{ $barang->stok }}
+                                {{ $barang->satuan }}
+                            </span>
+
+                        </div>
+
+                    @empty
+
+                        <div class="text-center py-4">
+                            <h5 class="text-success">
+                                Semua stok aman ✅
+                            </h5>
+                        </div>
+                    @endforelse
+
                 </div>
             </div>
         </div>
@@ -183,9 +227,9 @@
                                         <label class="form-check-label">
                                             <i class="input-helper"></i>
                                             <span
-                                                class="{{ $notif->tipe == 'ternak_siap_jual' ? 'text-success' : 'text-warning' }}">
+                                                class="{{ $notif->tipe == 'text-success' ? 'text-success' : 'text-warning' }}">
                                                 <i
-                                                    class="ti-{{ $notif->tipe == 'ternak_siap_jual' ? 'star' : 'alert' }} mr-1"></i>
+                                                    class="ti-{{ $notif->tipe == 'text-success' ? 'star' : 'alert' }} mr-1"></i>
                                             </span>
                                             {{ $notif->judul }}
                                             <small
@@ -211,61 +255,45 @@
     <script src="{{ asset('vendors/chart.js/Chart.min.js') }}"></script>
     <script>
         // Data dari Laravel (PHP → JS)
-        const dataJenis = @json($ternakPerJenis);
         const inventoryMovement = @json($inventoryMovement);
         const dataStok = @json($stokPerKategori);
 
-        // ── Chart: Ternak per Jenis (Pie) ────────────
-        new Chart(document.getElementById('chart-jenis'), {
-            type: 'pie',
-            data: {
-                labels: Object.keys(dataJenis).map(j => j.charAt(0).toUpperCase() + j.slice(1)),
-                datasets: [{
-                    data: Object.values(dataJenis),
-                    backgroundColor: ['#26C6DA', '#8E44AD'],
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-        // ── Chart: Aktivitas Inventory (Bar) ────────────────
+        // ── Chart Aktivitas Inventory 7 Hari ─────────
         new Chart(document.getElementById('chart-inventory'), {
             type: 'bar',
             data: {
-                labels: Object.keys(inventoryMovement),
+                labels: inventoryMovement.map(i => i.tanggal),
+
                 datasets: [{
-                    label: 'Jumlah Transaksi',
-                    data: Object.values(inventoryMovement),
-                    backgroundColor: [
-                        '#57B657', // masuk
-                        '#E33353' // keluar
-                    ],
-                    borderRadius: 8,
-                    barThickness: 60
-                }]
+                        label: 'Barang Masuk',
+                        data: inventoryMovement.map(i => i.masuk),
+                        backgroundColor: '#57B657',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Barang Keluar',
+                        data: inventoryMovement.map(i => i.keluar),
+                        backgroundColor: '#E33353',
+                        borderRadius: 6
+                    }
+                ]
             },
+
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+
                 plugins: {
                     legend: {
-                        display: false
+                        position: 'top'
                     }
                 },
+
                 scales: {
                     y: {
-                        min: 0,
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1,
-                            precision: 0
+                            stepSize: 1
                         }
                     }
                 }

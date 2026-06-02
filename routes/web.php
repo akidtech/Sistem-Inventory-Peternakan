@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\TernakController;
 use App\Http\Controllers\InventoryBarangController;
 use App\Http\Controllers\InventoryMasukController;
 use App\Http\Controllers\InventoryKeluarController;
@@ -27,9 +26,6 @@ Route::middleware('auth')->group(function () {
     // Profil
     Route::get('/pengaturan/profile',  [PengaturanController::class, 'profileIndex'])->name('pengaturan.profile');
     Route::put('/pengaturan/profile',  [PengaturanController::class, 'profileUpdate'])->name('pengaturan.profile.update');
-
-    // Data Ternak — semua user bisa akses
-    Route::resource('ternak', TernakController::class);
 
     // Inventory — semua user bisa LIHAT
     Route::get('/inventory/barang',         [InventoryBarangController::class, 'index'])->name('inventory.barang.index');
@@ -57,8 +53,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {
-        Route::get('/ternak',             [LaporanController::class, 'ternak'])->name('ternak');
-        Route::get('/ternak/pdf',         [LaporanController::class, 'ternakPdf'])->name('ternak.pdf');
         Route::get('/inventory',          [LaporanController::class, 'inventory'])->name('inventory');
         Route::get('/inventory/pdf',      [LaporanController::class, 'inventoryPdf'])->name('inventory.pdf');
     });

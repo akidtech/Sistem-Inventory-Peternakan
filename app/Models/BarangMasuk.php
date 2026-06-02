@@ -38,6 +38,8 @@ class BarangMasuk extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_barang_masuk';
+
     protected $table = 'barang_masuk';
 
     protected $fillable = [
@@ -59,12 +61,20 @@ class BarangMasuk extends Model
     // Relationships
     public function barang()
     {
-        return $this->belongsTo(Barang::class);
+        return $this->belongsTo(
+            Barang::class,
+            'barang_id',
+            'id_barang'
+        );
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(
+            User::class,
+            'user_id',
+            'id_user'
+        );
     }
 
     // Accessor

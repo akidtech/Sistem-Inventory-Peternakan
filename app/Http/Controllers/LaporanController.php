@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ternak;
 use App\Models\Barang;
 use App\Models\BarangMasuk;
 use App\Models\BarangKeluar;
@@ -14,64 +13,6 @@ class LaporanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    // ── Laporan Ternak ─────────────────────────────
-    public function ternak(Request $request)
-    {
-        $query = Ternak::with('user');
-
-        if ($request->status) {
-            $query->where('status', $request->status);
-        }
-        if ($request->jenis) {
-            $query->where('jenis', $request->jenis);
-        }
-        if ($request->dari) {
-            $query->whereDate('tanggal_masuk', '>=', $request->dari);
-        }
-        if ($request->sampai) {
-            $query->whereDate('tanggal_masuk', '<=', $request->sampai);
-        }
-
-        $ternak = $query->orderBy('tanggal_masuk', 'desc')->get();
-
-        $summary = [
-            'total'      => $ternak->count(),
-            'aktif'      => $ternak->where('status', 'aktif')->count(),
-            'siap_jual'  => $ternak->where('status', 'siap_jual')->count(),
-            'terjual'    => $ternak->where('status', 'terjual')->count(),
-            'total_beli' => $ternak->sum('harga_beli'),
-            'total_jual' => $ternak->sum('harga_jual'),
-        ];
-
-        return view('laporan.ternak', compact('ternak', 'summary', 'request'));
-    }
-
-    public function ternakPdf(Request $request)
-    {
-        $query = Ternak::with('user');
-
-        if ($request->status) $query->where('status', $request->status);
-        if ($request->jenis)  $query->where('jenis', $request->jenis);
-        if ($request->dari)   $query->whereDate('tanggal_masuk', '>=', $request->dari);
-        if ($request->sampai) $query->whereDate('tanggal_masuk', '<=', $request->sampai);
-
-        $ternak = $query->orderBy('tanggal_masuk', 'desc')->get();
-
-        $summary = [
-            'total'      => $ternak->count(),
-            'aktif'      => $ternak->where('status', 'aktif')->count(),
-            'siap_jual'  => $ternak->where('status', 'siap_jual')->count(),
-            'terjual'    => $ternak->where('status', 'terjual')->count(),
-            'total_beli' => $ternak->sum('harga_beli'),
-            'total_jual' => $ternak->sum('harga_jual'),
-        ];
-
-        $pdf = Pdf::loadView('laporan.pdf.ternak', compact('ternak', 'summary', 'request'))
-            ->setPaper('a4', 'landscape');
-
-        return $pdf->download('laporan-ternak-' . date('Ymd') . '.pdf');
     }
 
     // ── Laporan Inventory ──────────────────────────

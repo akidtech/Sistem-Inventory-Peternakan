@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ternak;
 use App\Models\Barang;
 use App\Models\BarangMasuk;
 use App\Models\BarangKeluar;
@@ -19,40 +18,46 @@ class DashboardController extends Controller
     public function index()
     {
         // ── Stat Cards ──────────────────────────────
-        $totalTernak    = Ternak::count();
         $totalBarang = Barang::count();
         $stokMenipis = Barang::stokMenurun()->count();
         $notifBelumDibaca = Notifikasi::where('user_id', auth()->id())->where('sudah_dibaca', false)->count();
-        // ── Chart: Ternak per Jenis (Pie) ───────────
-        $sapi = Ternak::whereIn('jenis', [
-            'limousin',
-            'simental',
-            'po',
-            'angus',
-            'brahman',
-            'bali',
-            'madura',
-            'friesian_holstein'
-        ])->count();
 
-        $kambing = Ternak::whereIn('jenis', [
-            'etawa',
-            'boer',
-            'kacang',
-            'jawarandu',
-            'saanen'
-        ])->count();
+        // ── Nilai Total Inventory ─────────────────
+        $nilaiInventory = Barang::sum(
+            DB::raw('stok * harga_satuan')
+        );
 
-        $ternakPerJenis = [
-            'Sapi' => $sapi,
-            'Kambing' => $kambing
-        ];
+        // ── Barang Hampir Habis ─────────────────
+        $barangMenipis = Barang::whereColumn(
+            'stok',
+            '<=',
+            'stok_minimum'
+        )
+            ->orderBy('stok', 'asc')
+            ->take(5)
+            ->get();
 
-        // ── Chart: Barang Masuk dan Keluar (Bar) ──────────
-        $inventoryMovement = [
-            'Masuk'  => BarangMasuk::count(),
-            'Keluar' => BarangKeluar::count(),
-        ];
+        // ── Chart: Aktivitas Inventory 7 Hari ──────────
+        $inventoryMovement = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+
+            $tanggal = now()->subDays($i);
+
+            $inventoryMovement[] = [
+                'tanggal' => $tanggal->translatedFormat('d M'),
+
+                'masuk' => BarangMasuk::whereDate(
+                    'tanggal_masuk',
+                    $tanggal
+                )->count(),
+
+                'keluar' => BarangKeluar::whereDate(
+                    'tanggal_keluar',
+                    $tanggal
+                )->count(),
+            ];
+        }
 
         // ── Chart: Stok Inventory per Kategori ──────
         $stokPerKategori = Barang::with('kategori')
@@ -90,39 +95,10 @@ class DashboardController extends Controller
                 ];
             });
 
-        // Ternak baru
-        $ternakBaru = Ternak::latest()
-            ->take(5)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->created_at,
-                    'aktivitas' => 'Ternak Baru',
-                    'detail' => $item->nama . ' (' . $item->kode_ternak . ') ditambahkan',
-                    'badge' => 'info'
-                ];
-            });
-
-        // Ternak terjual
-        $ternakTerjual = Ternak::where('status', 'terjual')
-            ->latest()
-            ->take(5)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->updated_at,
-                    'aktivitas' => 'Ternak Terjual',
-                    'detail' => $item->nama . ' (' . $item->kode_ternak . ') berhasil terjual',
-                    'badge' => 'warning'
-                ];
-            });
-
         // Gabung & urutkan terbaru
         $aktivitasTerbaru = collect()
             ->merge($barangMasuk)
             ->merge($barangKeluar)
-            ->merge($ternakBaru)
-            ->merge($ternakTerjual)
             ->sortByDesc('tanggal')
             ->take(8);
 
@@ -134,11 +110,11 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard.index', compact(
-            'totalTernak',
             'totalBarang',
             'stokMenipis',
             'notifBelumDibaca',
-            'ternakPerJenis',
+            'nilaiInventory',
+            'barangMenipis',
             'inventoryMovement',
             'stokPerKategori',
             'aktivitasTerbaru',

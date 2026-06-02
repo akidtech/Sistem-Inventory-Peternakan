@@ -38,6 +38,8 @@ class Notifikasi extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_notifikasi';
+
     protected $table = 'notifikasi';
 
     protected $fillable = [
@@ -57,12 +59,11 @@ class Notifikasi extends Model
     // Relationships
     public function user()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function notifiable()
-    {
-        return $this->morphTo();
+        return $this->belongsTo(
+            User::class,
+            'user_id',
+            'id_user'
+        );
     }
 
     // Scopes

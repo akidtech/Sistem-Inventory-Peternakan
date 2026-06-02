@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('pesan');
             $table->enum('tipe', ['ternak_siap_jual', 'stok_menipis', 'kesehatan', 'spk_selesai']);
             $table->boolean('sudah_dibaca')->default(false);
-            $table->nullableMorphs('notifiable'); // bisa link ke ternak atau barang
+            $table->nullableMorphs('notifiable'); // bisa link ke barang
             $table->timestamps();
         });
     }

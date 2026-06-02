@@ -27,6 +27,8 @@ class KategoriInventory extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_kategori';
+
     protected $table = 'kategori_inventory';
 
     protected $fillable = [
@@ -37,6 +39,10 @@ class KategoriInventory extends Model
     // Relationships
     public function barang()
     {
-        return $this->hasMany(Barang::class, 'kategori_id');
+        return $this->hasMany(
+            Barang::class,
+            'kategori_id',
+            'id_kategori'
+        );
     }
 }

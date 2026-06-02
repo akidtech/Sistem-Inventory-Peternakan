@@ -8,26 +8,6 @@
             </a>
         </li>
 
-        <li class="nav-item {{ request()->routeIs('ternak.*') ? 'active' : '' }}">
-            <a class="nav-link" data-toggle="collapse" href="#menu-ternak">
-                <i class="ti-list menu-icon"></i>
-                <span class="menu-title">Data Ternak</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse {{ request()->routeIs('ternak.*') ? 'show' : '' }}" id="menu-ternak">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('ternak.index', 'ternak.show', 'ternak.edit') ? 'active' : '' }}"
-                            href="{{ route('ternak.index') }}">Data Ternak</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('ternak.create') ? 'active' : '' }}"
-                            href="{{ route('ternak.create') }}">Tambah Ternak</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-
         @php $invActive = request()->routeIs('inventory.barang.*', 'inventory.masuk.*', 'inventory.keluar.*'); @endphp
         <li class="nav-item {{ $invActive ? 'active' : '' }}">
             <a class="nav-link" data-toggle="collapse" href="#menu-inventory">
@@ -56,7 +36,7 @@
         </li>
 
         @if (auth()->user()->isAdmin())
-            @php $lapActive = request()->routeIs('laporan.ternak', 'laporan.inventory'); @endphp
+            @php $lapActive = request()->routeIs('laporan.inventory'); @endphp
             <li class="nav-item {{ $lapActive ? 'active' : '' }}">
                 <a class="nav-link" data-toggle="collapse" href="#menu-laporan">
                     <i class="icon-paper menu-icon"></i>
@@ -65,10 +45,6 @@
                 </a>
                 <div class="collapse {{ $lapActive ? 'show' : '' }}" id="menu-laporan">
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('laporan.ternak') ? 'active' : '' }}"
-                                href="{{ route('laporan.ternak') }}">Laporan Ternak</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('laporan.inventory') ? 'active' : '' }}"
                                 href="{{ route('laporan.inventory') }}">Laporan Inventory</a>
@@ -79,7 +55,7 @@
         @endif
 
         @if (auth()->user()->isAdmin())
-            @php $setActive = request()->routeIs('pengaturan.kriteria', 'pengaturan.user', 'pengaturan.user.*'); @endphp
+            @php $setActive = request()->routeIs('pengaturan.user', 'pengaturan.user.*'); @endphp
             <li class="nav-item {{ $setActive ? 'active' : '' }}">
                 <a class="nav-link" data-toggle="collapse" href="#menu-pengaturan">
                     <i class="ti-settings menu-icon"></i>
