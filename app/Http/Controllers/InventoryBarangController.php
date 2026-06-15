@@ -50,7 +50,7 @@ class InventoryBarangController extends Controller
 
         $request->validate([
             'nama_barang'  => 'required|string|max:100',
-            'kategori_id'  => 'required|exists:kategori_inventory,id',
+            'kategori_id'  => 'required|exists:kategori_inventory,id_kategori',
             'satuan'       => 'required|string|max:20',
             'stok'         => 'required|integer|min:0',
             'stok_minimum' => 'required|integer|min:0',
@@ -69,7 +69,7 @@ class InventoryBarangController extends Controller
         // Nomor urut per kategori per tahun
         $lastBarang = Barang::where('kategori_id', $request->kategori_id)
             ->whereYear('created_at', date('Y'))
-            ->latest('id')
+            ->latest('id_barang')
             ->first();
 
         $nomorUrut = $lastBarang
@@ -103,7 +103,7 @@ class InventoryBarangController extends Controller
 
         $request->validate([
             'nama_barang'  => 'required|string|max:100',
-            'kategori_id'  => 'required|exists:kategori_inventory,id',
+            'kategori_id'  => 'required|exists:kategori_inventory,id_kategori',
             'satuan'       => 'required|string|max:20',
             'stok_minimum' => 'required|integer|min:0',
             'harga_satuan' => 'required|numeric|min:0',

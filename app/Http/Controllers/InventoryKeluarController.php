@@ -20,7 +20,7 @@ class InventoryKeluarController extends Controller
 
         foreach ($users as $user) {
             \App\Models\Notifikasi::create([
-                'user_id'      => $user->id,
+                'user_id'      => $user->id_user,
                 'judul'        => $judul,
                 'pesan'        => $pesan,
                 'tipe'         => $tipe,
@@ -66,7 +66,7 @@ class InventoryKeluarController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'barang_id'      => 'required|exists:barang,id',
+            'barang_id'      => 'required|exists:barang,id_barang',
             'jumlah'         => 'required|integer|min:1',
             'tanggal_keluar' => 'required|date',
             'keperluan'      => 'nullable|string|max:200',

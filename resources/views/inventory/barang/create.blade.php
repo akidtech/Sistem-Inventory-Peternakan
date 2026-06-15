@@ -33,8 +33,8 @@
                                         class="form-control @error('kategori_id') is-invalid @enderror">
                                         <option value="">-- Pilih Kategori --</option>
                                         @foreach ($kategori as $k)
-                                            <option value="{{ $k->id }}"
-                                                {{ old('kategori_id') == $k->id ? 'selected' : '' }}>
+                                            <option value="{{ $k->id_kategori }}"
+                                                {{ old('kategori_id') == $k->id_kategori ? 'selected' : '' }}>
                                                 {{ $k->nama }}
                                             </option>
                                         @endforeach

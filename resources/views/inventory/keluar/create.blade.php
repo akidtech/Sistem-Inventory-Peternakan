@@ -21,9 +21,9 @@
                                 id="select-barang">
                                 <option value="">-- Pilih Barang --</option>
                                 @foreach ($barang as $b)
-                                    <option value="{{ $b->id }}" data-stok="{{ $b->stok }}"
+                                    <option value="{{ $b->id_barang }}" data-stok="{{ $b->stok }}"
                                         data-satuan="{{ $b->satuan }}"
-                                        {{ old('barang_id') == $b->id ? 'selected' : '' }}>
+                                        {{ old('barang_id') == $b->id_barang ? 'selected' : '' }}>
                                         {{ $b->nama_barang }} (Stok: {{ $b->stok }} {{ $b->satuan }})
                                     </option>
                                 @endforeach
