@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SiTernak') - Sistem Manajemen Ternak</title>
+    <title>@yield('title', 'SiTernak') - Sistem Inventory Ternak</title>
 
     {{-- Skydash CSS --}}
     <link rel="stylesheet" href="{{ asset('vendors/feather/feather.css') }}">
